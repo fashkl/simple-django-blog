@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}
+    Add new post
+{% endblock %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+
+        <h1>Add Post</h1>
+
+        <div class="form-group">
+            <form action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.media }}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-secondary">Post</button>
+            </form>
+        </div>
+
+        <script>
+            const name = "{{ user.id }}";
+            document.getElementById('username-field').value = name;
+        </script>
+
+    {% else %}
+        <h1 class="alert alert-danger mt-3">Sorry! you should be logged-in</h1>
+    {% endif %}
+
+{% endblock %}

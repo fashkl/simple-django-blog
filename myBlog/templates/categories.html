@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}
+    Category
+{% endblock %}
+
+{% block content %}
+    {% if category_posts %}
+        <h1>Category: {{ category }}</h1>
+        <br>
+        <ul>
+            {% for post in category_posts %}
+                <li>
+                    <a href="{% url 'article-detail' post.pk %}">{{ post.title }}</a>
+                    - {{ post.author.first_name }} {{ post.author.last_name }}
+                    - <small>{{ post.post_date }}</small>
+                    {% if user.is_authenticated %}
+                        {% if user.id == post.author.id %}
+                            -  <small><a href="{% url 'update_post' post.pk %}">(Edit)</a></small>
+                            |  <small><a href="{% url 'delete_post' post.pk %}">(Delete)</a></small>
+                        {% endif %}
+                    {% endif %}
+                    <br> {{ post.body|slice:":200"|safe }}
+                    <br>
+                    <hr>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <br>
+        <h1>Sorry Category Doesn't exist</h1>
+    {% endif %}
+
+
+{% endblock %}
