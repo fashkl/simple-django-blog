@@ -1,7 +1,8 @@
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post, Category
-from .forms import PostForm, PostEditForm, CategoryForm
+from .models import Post, Category, Comment
+from .forms import PostForm, PostEditForm, CategoryForm, CommentForm
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
 
@@ -109,3 +110,18 @@ def category_view(request, category):
     category_posts = Post.objects.filter(category=category)
     return render(request, 'categories.html',
                   {'category': str(category).title().replace('-', ' '), 'category_posts': category_posts})
+
+
+class AddCommentView(CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'add_comment.html'
+
+    def form_valid(self, form):
+        form.instance.post_id = self.kwargs.get('pk')
+        if self.request.user.is_authenticated:
+            form.instance.name = '%s %s' % (self.request.user.first_name, self.request.user.last_name)
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('article-detail', kwargs={'pk': self.kwargs['pk']})
